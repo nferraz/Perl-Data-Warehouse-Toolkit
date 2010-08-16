@@ -58,10 +58,8 @@ See http://dev.perl.org/licenses/ for more information.
 
 DISCLAIMER
 
-The Perl Data Warehouse Toolkit is not associated with Ralph Kimball's
-"Data Warehouse Toolkit" books.
-
-That said, I strongly recommend his books:
+This module is not associated with Ralph Kimball's "Data Warehouse
+Toolkit" books. That said, I strongly recommend his books:
 
   * The Data Warehouse Toolkit
   http://www.amazon.com/Data-Warehouse-Toolkit-Complete-Dimensional/dp/0471200247
