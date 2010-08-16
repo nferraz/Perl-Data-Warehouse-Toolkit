@@ -4,7 +4,6 @@ Changes
 ignore.txt
 lib/DW/Aggregate.pm
 lib/DW/Dimension.pm
-lib/DW/Dimesion.pm
 lib/DW/ETL.pm
 lib/DW/Fact.pm
 Makefile.PL
