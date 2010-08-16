@@ -1,0 +1,118 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Mojo::Template;
+
+my $mt = Mojo::Template->new();
+
+my $template = do { local $/ = '__END__'; <DATA> };
+
+my %param = (
+    dsn         => 'jamala',
+    db_user     => '',
+    db_password => '',
+    dimensions  => [ { name => 'foo', attributes => [ 'bar', 'baz' ], natural_key => 'x' } ],
+    fact_table  => 'fact',
+);
+
+my $output = $mt->render($template,%param);
+
+print $output;
+
+__END__
+% my %param = @_;
+#!/usr/bin/perl
+
+use lib './lib';
+
+use Mojolicious::Lite;
+
+use DW::Fact;
+use Data::Dumper;
+
+my $fact = DW::Fact->new(
+    dsn       => '<%= $param{dsn} %>',
+    name      => '<%= $param{fact_table} %>',
+    dimension => [qw/<%= join(' ', map { $_->{name} } @{$param{dimensions}}) %>/],
+);
+
+# /
+get '/' => sub {
+    my $self = shift;
+
+    $self->render(
+        template => 'index',
+        fact     => $fact,
+    );
+};
+
+get '/report' => sub {
+    my $self = shift;
+
+    my @dim_attr = grep { $self->param($_) eq 'on' } $self->param();
+    my @where = ();
+    my $query = $fact->aggr_query(\@dim_attr,\@where);
+
+    my $sth = $fact->prepare($query);
+
+    my $rv = $sth->execute();
+
+    my $data = $sth->fetchall_arrayref();
+
+    $self->render(
+        template => 'report',
+        query    => $query,
+        fact     => $fact,
+        header   => \@dim_attr,
+        rows     => $data,
+    );
+};
+
+app->start;
+
+__END__
+@@ index.html.ep
+
+<h1><%= $fact->{name} %></h1>
+
+<h2>Dimensions</h2>
+
+<form method="get" action="/report">
+
+% for my $d (@{ $fact->{dimension} }) {
+<h3><%= $d %></h3>
+%   for my $c ($fact->dim($d)->column_names) {
+<input type="checkbox" name="<%= $d %>.<%= $c %>"><%= $d %>.<%= $c %><br>
+%   }
+% }
+
+<input type="submit">
+
+</form>
+
+@@ report.html.ep
+
+<h1>Report</h1>
+
+<form>
+<textarea cols="60" rows="10">
+<%= $query %>
+</textarea>
+</form>
+
+<table>
+<tr>
+% for my $h ( @{$header} ) {
+    <th><%= $h %></th>
+% }
+</tr>
+% for my $row ( @{$rows} ) {
+    <tr>
+%   for my $col ( @{$row} ) {
+        <td><%= $col %></td>
+%   }
+    </tr>
+% }
+</table>

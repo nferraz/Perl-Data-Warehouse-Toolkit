@@ -1,0 +1,77 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Mojo::Template;
+
+my $mt = Mojo::Template->new();
+
+my $template = do { local $/ = '__END__'; <DATA> };
+
+my %param = (
+    dsn         => 'jamala',
+    db_user     => '',
+    db_password => '',
+    dimensions  => [ { name => 'foo', attributes => [ 'bar', 'baz' ], natural_key => 'x' } ],
+    fact_table  => 'fact',
+);
+
+my $output = $mt->render($template,%param);
+
+print $output;
+
+__END__
+% my %param = @_;
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use DW::ETL;
+
+my $etl = DW::ETL->new(
+    dsn         => '<%= $param{dsn} %>',
+    db_user     => '<%= $param{db_user} %>',
+    db_password => '<%= $param{db_password} %>'
+);
+
+$etl->initialize_dimension(
+% for my $dim ( @{$param{dimensions}} ) {
+    TABLE        => '<%= $dim->{name} %>',
+    ATTRIBUTES   => [qw/ <%= join(' ', @{$dim->{attributes}}) %> /],
+    NATURAL_KEY  => '<%= $dim->{natural_key} %>',
+    #KEEP_HISTORY => [],
+% }
+);
+
+$etl->dbh->begin_work();
+
+while ( my $line = <> ) {
+    chomp $line;
+
+    my (<%= join(', ', map { '$' . $_ } map { @{ $_->{attributes} } } @{$param{dimensions}} ) %>) = split( /\t/, $line );
+
+% for my $dim ( @{$param{dimensions}} ) {
+    my $<%= $dim->{name} %>_id = $etl->populate_dimension(
+        TABLE    => '<%= $dim->{name} %>',
+%   for my $attr ( @{$dim->{attributes}} ) {
+        '<%= $attr %>' => $<%= $attr %>,
+%   }
+    );
+% }
+
+    $etl->populate_fact(
+        TABLE     => '<%= $param{fact_table} %>',
+% for my $dim ( @{$param{dimensions}} ) {
+        '<%= $dim->{name} %>' => $<%= $dim->{name} %>_id,
+% }
+    );
+
+    if ( $. % 10_000 == 0 ) {
+        $etl->dbh->commit();
+        $etl->dbh->begin_work();
+    }
+}
+
+$etl->dbh->commit();
