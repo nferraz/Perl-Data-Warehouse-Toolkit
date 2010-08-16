@@ -48,9 +48,9 @@ TODO: {
     "placeholder date/time"       => qr(Date/time)
   );
 
-  module_boilerplate_ok('lib/DW/Fact.pm');
-  module_boilerplate_ok('lib/DW/Dimesion.pm');
-  module_boilerplate_ok('lib/DW/Aggregate.pm');
+  module_boilerplate_ok('lib/DataWarehouse/Fact.pm');
+  module_boilerplate_ok('lib/DataWarehouse/Dimension.pm');
+  module_boilerplate_ok('lib/DataWarehouse/Aggregate.pm');
 
 
 }
