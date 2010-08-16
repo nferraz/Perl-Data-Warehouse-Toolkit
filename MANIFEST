@@ -2,10 +2,10 @@ bin/dw-etl
 bin/dw-nav
 Changes
 ignore.txt
-lib/DW/Aggregate.pm
-lib/DW/Dimension.pm
-lib/DW/ETL.pm
-lib/DW/Fact.pm
+lib/DataWarehouse/Aggregate.pm
+lib/DataWarehouse/Dimension.pm
+lib/DataWarehouse/ETL.pm
+lib/DataWarehouse/Fact.pm
 Makefile.PL
 MANIFEST
 README

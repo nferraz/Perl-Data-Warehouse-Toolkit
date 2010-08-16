@@ -3,10 +3,10 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME                => 'DW::Fact',
+    NAME                => 'Perl-DataWarehouse-Toolkit',
     AUTHOR              => q{Nelson Ferraz <nferraz@gmail.com>},
-    VERSION_FROM        => 'lib/DW/Fact.pm',
-    ABSTRACT_FROM       => 'lib/DW/Fact.pm',
+    VERSION_FROM        => 'lib/DataWarehouse/Fact.pm',
+    ABSTRACT_FROM       => 'lib/DataWarehouse/Fact.pm',
     ($ExtUtils::MakeMaker::VERSION >= 6.3002
       ? ('LICENSE'=> 'perl')
       : ()),
