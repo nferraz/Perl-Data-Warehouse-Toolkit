@@ -1,4 +1,4 @@
-package DW::ETL;
+package DataWarehouse::ETL;
 
 use warnings;
 use strict;
@@ -134,7 +134,7 @@ __END__
 
 =head1 NAME
 
-DW::ETL - The great new DW::ETL!
+DataWarehouse::ETL - The great new DataWarehouse::ETL!
 
 =head1 VERSION
 
@@ -151,9 +151,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use DW::ETL;
+    use DataWarehouse::ETL;
 
-    my $foo = DW::ETL->new();
+    my $foo = DataWarehouse::ETL->new();
     ...
 
 =head1 EXPORT
@@ -184,7 +184,7 @@ Nelson Ferraz, C<< <nferraz at gmail.com> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-dw at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=DW>.  I will be notified, and then you'll
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=DataWarehouse>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -194,7 +194,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc DW::ETL
+    perldoc DataWarehouse::ETL
 
 
 You can also look for information at:
@@ -203,19 +203,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=DW>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=DataWarehouse>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/DW>
+L<http://annocpan.org/dist/DataWarehouse>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/DW>
+L<http://cpanratings.perl.org/d/DataWarehouse>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/DW/>
+L<http://search.cpan.org/dist/DataWarehouse/>
 
 =back
 
