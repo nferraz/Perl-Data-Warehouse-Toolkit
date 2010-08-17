@@ -20,10 +20,9 @@ my $result = GetOptions(
 
 pod2usage(1) if !$dsn or !$fact_table or !@dimensions;
 
-
 my $mt = Mojo::Template->new();
 
-my $template = do { local $/ = '__END__'; <DATA> };
+my ($template,$data) = do { local $/ = '__END__'; <DATA> };
 
 my %param = (
     dsn         => $dsn,
@@ -35,7 +34,7 @@ my %param = (
 
 my $output = $mt->render($template,%param);
 
-print $output;
+print $output, $data;
 
 sub _fake_dimension {
     my $name = shift;
@@ -124,10 +123,10 @@ use lib './lib';
 
 use Mojolicious::Lite;
 
-use DW::Fact;
+use DataWarehouse::Fact;
 use Data::Dumper;
 
-my $fact = DW::Fact->new(
+my $fact = DataWarehouse::Fact->new(
     dsn       => '<%= $param{dsn} %>',
     name      => '<%= $param{fact_table} %>',
     dimension => [qw/<%= join(' ', map { $_->{name} } @{$param{dimensions}}) %>/],
@@ -167,7 +166,7 @@ get '/report' => sub {
 
 app->start;
 
-__DATA__
+__END__
 @@ index.html.ep
 
 <h1><%= $fact->{name} %></h1>
