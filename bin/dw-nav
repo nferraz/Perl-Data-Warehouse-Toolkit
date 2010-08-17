@@ -22,7 +22,7 @@ pod2usage(1) if !$dsn or !$fact_table or !@dimensions;
 
 my $mt = Mojo::Template->new();
 
-my ($template,$data) = do { local $/ = '__END__'; <DATA> };
+my ($template,$data) = do { local $/ = '__DATA__'; <DATA> };
 
 my %param = (
     dsn         => $dsn,
@@ -166,7 +166,7 @@ get '/report' => sub {
 
 app->start;
 
-__END__
+__DATA__
 @@ index.html.ep
 
 <h1><%= $fact->{name} %></h1>
@@ -177,7 +177,7 @@ __END__
 
 % for my $d (@{ $fact->{dimension} }) {
 <h3><%= $d %></h3>
-%   for my $c ($fact->dim($d)->column_names) {
+%   for my $c ($fact->dimension($d)->column_names) {
 <input type="checkbox" name="<%= $d %>.<%= $c %>"><%= $d %>.<%= $c %><br>
 %   }
 % }
