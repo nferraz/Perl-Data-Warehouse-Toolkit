@@ -2,6 +2,7 @@ bin/dw-etl
 bin/dw-nav
 Changes
 ignore.txt
+lib/DataWarehouse.pod
 lib/DataWarehouse/Aggregate.pm
 lib/DataWarehouse/Dimension.pm
 lib/DataWarehouse/ETL.pm
@@ -14,3 +15,4 @@ t/boilerplate.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
+META.yml                                 Module meta-data (added by MakeMaker)
