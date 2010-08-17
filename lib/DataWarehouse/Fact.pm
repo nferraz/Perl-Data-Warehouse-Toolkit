@@ -3,7 +3,7 @@ package DataWarehouse::Fact;
 use warnings;
 use strict;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Carp;
 use Data::Dumper;
@@ -127,7 +127,7 @@ DataWarehouse::Fact - a Data Warehouse Fact table
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 
