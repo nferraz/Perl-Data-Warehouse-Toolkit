@@ -3,6 +3,8 @@ package DataWarehouse::Fact;
 use warnings;
 use strict;
 
+our $VERSION = '0.01';
+
 use Carp;
 use Data::Dumper;
 use DBI;
@@ -118,29 +120,36 @@ sub _join_str {
 1;
 
 __END__
-
 =head1 NAME
 
-DataWarehouse::Fact - The great new DataWarehouse::Fact!
+DataWarehouse::Fact - a Data Warehouse Fact table
 
 =head1 VERSION
 
 Version 0.01
 
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+    use DataWarehouse::Fact;
 
-Perhaps a little code snippet.
+    my $fact = DataWarehouse::Fact->new(
+        dsn       => 'dbi:SQLite:dbname=dw.db',
+        name      => 'sales',
+        dimension => [ qw/ customer product / ],
+    );
 
-    use DataWarehouse::Dimension;
+    my $query = $fact->aggr_query(
+        \@dimension,
+        \@where, 
+    );
 
-    my $foo = DataWarehouse::Dimension->new();
- 
+    my $sth = $fact->prepare($query);
+
+    my $data = $sth->fetchall_arrayref();
+
+=head1 DESCRIPTION
+
+DataWarehouse::Fact
 
 =head1 AUTHOR
 
