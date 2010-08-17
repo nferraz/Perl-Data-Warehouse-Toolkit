@@ -134,22 +134,22 @@ __END__
 use strict;
 use warnings;
 
-use DW::ETL;
+use DataWarehouse::ETL;
 
-my $etl = DW::ETL->new(
+my $etl = DataWarehouse::ETL->new(
     dsn         => '<%= $param{dsn} %>',
     db_user     => '<%= $param{db_user} %>',
     db_password => '<%= $param{db_password} %>'
 );
 
-$etl->initialize_dimension(
 % for my $dim ( @{$param{dimensions}} ) {
+$etl->initialize_dimension(
     TABLE        => '<%= $dim->{name} %>',
     ATTRIBUTES   => [qw/ <%= join(' ', @{$dim->{attributes}}) %> /],
     NATURAL_KEY  => '<%= $dim->{natural_key} %>',
     #KEEP_HISTORY => [],
-% }
 );
+% }
 
 $etl->dbh->begin_work();
 
