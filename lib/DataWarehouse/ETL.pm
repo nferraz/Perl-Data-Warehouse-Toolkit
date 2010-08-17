@@ -10,7 +10,7 @@ use DBI;
 sub new {
     my ( $class, %param ) = @_;
 
-    croak "Error: missing dbh or dsn" if !$param{dbh} and !$param{dsn};
+    croak "Error: One of 'dbh' or 'dsn' parameters is required" if !($param{dbh} xor $param{dsn});
 
     if ( $param{dsn} ) {
         $param{dbh} = DBI->connect( $param{dsn}, $param{db_user}, $param{db_password} );

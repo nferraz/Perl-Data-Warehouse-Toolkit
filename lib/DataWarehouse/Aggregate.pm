@@ -9,9 +9,9 @@ use DBI;
 sub new {
     my ( $class, %params ) = @_;
 
+    croak "Error: One of 'dbh' or 'dsn' parameters is required" if !($params{dbh} xor $params{dsn});
     croak "Error: missing base_table" if !$params{base_table};
     croak "Error: missing dimension"  if !$params{dimension};
-    croak "Error: missing dbh or dsn" if !$params{dbh} and !$params{dsn};
 
     if ( $params{dsn} ) {
         $params{dbh} = DBI->connect( $params{dsn}, $params{db_user}, $params{db_password} ),;
