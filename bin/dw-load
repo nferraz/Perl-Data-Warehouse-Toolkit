@@ -47,11 +47,11 @@ sub _fake_dimension {
 
 =head1 NAME
 
-dw-etl - generate a simple load script
+dw-load - generate a simple load script
 
 =head1 SYNOPSIS
 
-    dw-etl [options]
+    dw-load [options]
 
 =head1 OPTIONS
 
@@ -75,10 +75,11 @@ The name of one or more dimensions.
 
 =head2 EXAMPLE
 
-    dw-etl --dsn='dbi:SQLite:dbname=test.db' \
-           --fact='sales' \
-           --dimension='user' \
-           --dimension='product'
+    dw-load \
+        --dsn='dbi:SQLite:dbname=test.db' \
+        --fact='sales' \
+        --dimension='user' \
+        --dimension='product'
 
 =head1 DESCRIPTION
 
