@@ -1,19 +1,21 @@
-Perl-Data-Warehouse-Toolkit
+DataWarehouse
+
+Perl is a language optimized for scanning arbitrary text files, extracting
+information from those text files, and generating reports based on that
+information. It's also a good language for many system management tasks.
+The language is intended to be practical (easy to use, efficient,
+complete) rather than beautiful (tiny, elegant, minimal).
 
 A Data Warehouse (DW) is a repository of an organization's data, designed
 to facilitate reporting and analysis at different levels of aggregation.
 
 The main source of the data is extracted, cleaned, transformed, and made
 available to managers and other business professionals for data mining,
-online analytical processing, market research and decision support.
+online analytical processing, market research and decision support. This
+process is called ETL (Extract/Transform/Load).
 
-Perl is a language optimized for scanning arbitrary text files,
-extracting information from those text files, and printing reports
-based on that information.  It's also a good language for many system
-management tasks.  The language is intended to be practical (easy to use,
-efficient, complete) rather than beautiful (tiny, elegant, minimal).
-
-The Perl Data Warehouse Toolkit goal is to make simple ETL and DW tasks
+The Perl Data Warehouse Toolkit is a generic set of tools created to
+manage Data Warehouses meta-information, making simple ETL and DW tasks
 easy, and complex tasks possible.
 
 INSTALLATION
@@ -30,21 +32,26 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc DW
+    perldoc DataWarehouse
 
 You can also look for information at:
 
     RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Perl-Data-Warehouse-Toolkit
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=DataWarehouse
 
     AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Perl-Data-Warehouse-Toolkit
+        http://annocpan.org/dist/DataWarehouse
 
     CPAN Ratings
-        http://cpanratings.perl.org/d/Perl-Data-Warehouse-Toolkit
+        http://cpanratings.perl.org/d/DataWarehouse
 
     Search CPAN
-        http://search.cpan.org/dist/Perl-Data-Warehouse-Toolkit/
+        http://search.cpan.org/dist/DataWarehouse/
+
+The complete source code is available at:
+
+    GitHub
+        http://github.com/nferraz/Perl-Data-Warehouse-Toolkit
 
 LICENSE AND COPYRIGHT
 
