@@ -3,7 +3,7 @@ package DataWarehouse::Fact;
 use warnings;
 use strict;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Carp;
 use Data::Dumper;
@@ -127,7 +127,7 @@ DataWarehouse::Fact - a Data Warehouse Fact table
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =head1 SYNOPSIS
 
@@ -150,7 +150,34 @@ Version 0.02
 
 =head1 DESCRIPTION
 
-DataWarehouse::Fact
+A DataWarehouse::Fact represents a fact table.
+
+A typical fact table contains numeric facts and foreign keys that
+references dimension tables. Some fact tables may contain just foreign
+keys; those are "factless" fact tables. Fact tables may also contain
+natural keys that identify the facts in the source systems.
+
+=head2 GRAIN
+
+The grain of a fact table is defined by its dimensions. For instance,
+the grain of "Sales" fact table is "Sales by product, by store, by day".
+
+This notion is particularly useful when we talk about aggregate fact
+tables, which different grain (for example: "Sales by month").
+
+=head2 HOUSEKEEPING COLUMNS
+
+=head3 load_date
+
+When a fact is loaded, it should have a timestamp that identifies the
+load time. This will help us to detect aggregate tables which should 
+be updated.
+
+=head3 n
+
+When we create aggregate tables, we will store the number of aggregated
+records in a column called "n". For the base fact table, n should default
+to 1.
 
 =head1 AUTHOR
 
