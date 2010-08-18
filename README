@@ -18,6 +18,10 @@ The Perl Data Warehouse Toolkit is a generic set of tools created to
 manage Data Warehouses meta-information, making simple ETL and DW tasks
 easy, and complex tasks possible.
 
+WARNING
+
+THIS IS ALPHA SOFTWARE. It could drink your beer and eat your hamster!
+
 INSTALLATION
 
 To install this module, run the following commands:
