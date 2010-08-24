@@ -92,27 +92,104 @@ Imagine that you need a report of "sales by month in 2010". This is
 the original pseudo-query:
 
     SELECT
-        sales,
+        month,
         SUM(sales)
     FROM Sales
-    WHERE year=2010;
+    WHERE year=2010
+    GROUP BY month;
 
 If your company makes 100,000 transactions a month, that simple query
 will have to query over 1,200,000 rows to produce a simple sum.
 
-Now, imagine that we have a pre-calculated Sales_by_month table:
+Now, imagine that we have a pre-calculated table, Sales_by_day:
 
     SELECT
-        sales,
+        month,
         SUM(sales)
-    FROM Sales_by_month
-    WHERE year=2010;
+    FROM Sales_by_day
+    WHERE year=2010
+    GROUP BY month;
 
-Now, you're going to get the exact same response by querying 12 rows.
-    
+Now, you're going to get the exact same response by querying 365 rows,
+instead of 1.2 million. That's a huge improvement!
 
+The only problem is that you can't predict all the possible queries
+that will be made; that's the very nature of a data warehouse. So,
+you'll end up with several aggregate tables for each base fact table:
 
-=head2 AGGREGATE NAVIGATOR
+=over
+
+=item Sales_by_day
+
+=item Sales_by_month
+
+=item Sales_by_year
+
+=item Sales_by_product
+
+=item Sales_by_brand
+
+=item Sales_by_user
+
+=item Sales_by_region
+
+=item and so on...
+
+=back
+
+Moreover, you depend on the end users (or programmers) to actually *use*
+these tables, instead of the base fact table.
+
+And you know -- users will always query the base fact table, because it
+is easier.
+
+=head1 AGGREGATE NAVIGATOR
+
+The solution to this problem is to make the aggregates invisible: we
+will create an intermediate layer, above DBI, that will intercept each
+query made against the base fact table, and rewrite it so it will use
+the best aggregate table available.
+
+For example:
+
+    ----------------------------------------------------------
+    User SQL...                 Becomes...
+    ----------------------------------------------------------
+    SELECT                      SELECT
+        month,                      month,
+        SUM(sales)                  SUM(sales)
+    FROM                        FROM
+        Sales                       Sales_by_month
+    WHERE                       WHERE
+        year=2010                   year=2010
+    GROUP BY                    GROUP BY
+        month                       month
+    ----------------------------------------------------------
+    SELECT                      SELECT
+        brand,                      brand,
+        SUM(sales)                  SUM(sales)
+    FROM                        FROM
+        Sales                       Sales_by_brand
+    WHERE                       WHERE
+        year=2010                   year=2010
+    GROUP BY                    GROUP BY
+        brand                       brand 
+    ----------------------------------------------------------
+    SELECT                      SELECT
+        month,                      month,
+        brand,                      brand,
+        SUM(sales)                  SUM(sales)
+    FROM                        FROM
+        Sales                       Sales_by_brand_by_month
+    WHERE                       WHERE
+        year=2010                   year=2010
+    GROUP BY                    GROUP BY
+        month,                      month,
+        brand                       brand 
+    ----------------------------------------------------------
+
+The aggregate navigator, which performs this transformation, will improve
+the performance of the data warehouse transparently.
 
 =head1 WARNING
 
