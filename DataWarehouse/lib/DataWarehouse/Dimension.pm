@@ -7,6 +7,8 @@ use Carp;
 use Data::Dumper;
 use DBI;
 
+our $VERSION = '0.01';
+
 sub new {
     my ( $class, %params ) = @_;
 
@@ -37,48 +39,101 @@ __END__
 
 =head1 NAME
 
-DataWarehouse::Dimension - The great new DataWarehouse::Dimension!
+DataWarehouse::Dimension - a data warehouse dimension meta-information
 
 =head1 VERSION
 
 Version 0.01
 
-=cut
-
-our $VERSION = '0.01';
-
-
 =head1 SYNOPSIS
-
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
 
     use DataWarehouse::Dimension;
 
-    my $foo = DataWarehouse::Dimension->new();
-    ...
+    my $dimension = DataWarehouse::Dimension->new(
+        dbh  => $dbh,
+        name => 'product',
+    );
 
-=head1 EXPORT
+=head1 DESCRIPTION
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+Every dimensional model is made of Facts and Dimensions.
 
-=head1 SUBROUTINES/METHODS
+Facts are the measurements; for example, sales.
 
-=head2 function1
+But the facts, per se, provide incomplete information: what is that
+amount related to? Dimensions are give context to the facts. For
+instance: "sales by country" or "sales by product", or "sales by
+product, by day"
 
-=cut
+In relational databases, facts and dimensions will be stored in
+separate tables; the result is the star schema:
 
-sub function1 {
-}
+         +-----+                       +-------------+
+         ! day !-----             -----! salesperson !
+         +-----+     \ +-------+ /     +-------------+
+                       ! sales !
+      +---------+    / +-------+ \     +----------+
+      ! product !----             -----! customer !
+      +---------+                      +----------+
 
-=head2 function2
+=head2 PRIMARY KEY
 
-=cut
+Every dimension table must have a primary key that is different from
+the primary key used in the source systems.
 
-sub function2 {
-}
+The primary key should be meaningless; we call it a "surrogate key".
+
+=head2 NATURAL KEYS
+
+You should also store the "natural key", used to identify the records
+in the source systems: for example, product_id, customer_id, or
+salesperson_id. You can identify the natural keys with
+C<< NATURAL_KEY => 1 >>.
+
+=head2 SLOWLY CHANGING DIMENSIONS
+
+One of the major goals of the data warehouse is to preserve history. For
+instance: a product could be priced at $259 in one year, and have a 
+price drop to $189 in the next year.
+
+You don't want to overwrite the price in the product dimension, because
+that would cause you to loose information -- the old price was correct
+in the past.
+
+The strategy to deal with this, is to create a new record with the updated
+information. That's why the data warehouse must use a surrogate key and 
+should identify the natural keys.
+
+You can identify the attributes for which you want to preserve history
+with (C<< KEEP_HISTORY => 1 >>).
+
+If you don't identify an attribute with C<<KEEP_HISTORY>>, we'll assume
+that you don't want to preserve history for that information.
+
+Finally, if you think that one attribute will change too often, you
+should consider storing it in a separate dimension.
+
+=head2 AGGREGATION POINTS
+
+Some attributes are typically used as aggregation points, in many queries.
+
+For instance: "month" and "year" are typical aggregate points in the
+"day" dimension; "brand" and "type" are typical aggregation points in the
+"product" dimension.
+
+When you create a dimension, you can indicate that an attribute is an
+aggregation point; this information may be used to generate aggregate
+tables.
+
+=head1 SEE ALSO
+
+=over
+
+=item *
+
+L<DataWarehouse::Fact>
+
+=back
 
 =head1 AUTHOR
 
@@ -96,7 +151,6 @@ automatically be notified of progress on your bug as I make changes.
 You can find documentation for this module with the perldoc command.
 
     perldoc DataWarehouse::Dimension
-
 
 You can also look for information at:
 
@@ -119,7 +173,6 @@ L<http://cpanratings.perl.org/d/DataWarehouse>
 L<http://search.cpan.org/dist/DataWarehouse/>
 
 =back
-
 
 =head1 ACKNOWLEDGEMENTS
 
