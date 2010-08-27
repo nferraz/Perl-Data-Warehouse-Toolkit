@@ -49,9 +49,36 @@ Version 0.01
 
     use DataWarehouse::Dimension;
 
+    # NOTE: "table" and "attributes" were not implemented yet
+
     my $dimension = DataWarehouse::Dimension->new(
-        dbh  => $dbh,
-        name => 'product',
+        dbh   => $dbh,
+        name  => 'product',
+        table => 'product',
+        attributes => [
+            {
+                name => 'id',
+                PRIMARY_KEY => 1,
+            },
+            {
+                name => 'product_id',
+                NATURAL_KEY => 1,
+            },
+            {
+                name => 'name',
+                KEEP_HISTORY => 1,
+                AGGREGATION_POINT => 1,
+            },
+            {
+                name => 'brand'
+                KEEP_HISTORY => 1,
+                AGGREGATION_POINT => 1,
+            },
+            {
+                name => 'price'
+                KEEP_HISTORY => 1,
+            },
+        ],
     );
 
 =head1 DESCRIPTION
