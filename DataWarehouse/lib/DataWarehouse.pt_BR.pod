@@ -1,0 +1,219 @@
+=head1 NOME
+
+DataWarehouse - Perl Data Warehouse Toolkit
+
+=head1 DESCRICAO
+
+Um Data Warehouse (DW) é um repositório de informações de uma
+empresa, projetado para facilitar a confecção de relatórios com
+diferentes níveis de agregação.
+
+Os dados dos sistemas de origem são extraídos, processados,
+e disponibilizados para que gerentes e outros profissionais da área
+de negócios possam efetuar pesquisas, data mining, pesquisas de
+mercado e tomar decisões. O processo de extração, transformação e
+carregamento dos dados é denominado ETL ("Extract,Transform,Load").
+
+Perl é uma linguagem otimizada para lidar com arquivos de texto,
+extrair informações, e gerar relatórios.
+
+O Perl Data Warehouse Toolkit é um conjunto de ferramentas genéricas
+criado para gerenciar a meta-informação de um Data Warehouse, tornando
+as tarefas simples fáceis de completar; e as complexas, possíveis.
+
+Estas ferramentas estão sendo desenvolvidas nesse momento; o código e
+documentação estão disponíveis no github:
+
+http://github.com/nferraz/Perl-Data-Warehouse-Toolkit
+
+=head2 ETL
+
+O processo de ETL ("Extract,Transform,Load") consiste de 3 passos:
+
+=head3 Extração
+
+Dados são extraídos do sistema de origem e salvos localmente. É
+importante que as informações sejam salvas localmente, para evitar
+múltiplos acessos aos sistemas de origem, caso o processo de ETL
+precise ser reiniciado por qualquer razão.
+
+=head3 Transformação
+
+Quando trabalhamos com múltiplos sistemas, os dados podem apresentar
+inconsistências, que devem ser corrigidas. Idealmente a correção
+deve ser feita nos sistemas de origem, para que eles guardem dados
+de maneira padronizada. Se isto não for possível, os dados extraídos
+devem ser processados, e a saída salva localmente, para evitar
+trabalhos duplicados. É conveniente também manter um log com as
+transformações que foram realizadas; e, sempre que possível, estas
+mudanças devem ser levadas para os sistemas de origem.
+
+=head3 Carregamento
+
+Este é o passo final, e o objetivo do processo de ETL: publicar os
+dados!  Nós começamos carregando as tabelas de Dimensões, prestando
+atenção especial para as mudanças ("slowly changing dimensions").
+
+Depois das Dimensões, podemos prosseguir com as tabelas de Fatos.
+
+Quando todos os dados são publicados, usuários devem ser capazes
+de gerar relatórios dinâmicos usando o Data Warehouse Navigator.
+
+=head2 Data Warehouse Navigator
+
+O Data Warehouse Navigator é uma interface web sobre o Data Warehouse.
+
+Ele usa a meta-informação sobre Fatos e Dimensões para apresentar
+uma interface simples e consistente, que pode ser usada para gerar
+relatórios dinâmicos.
+
+Mas antes de podermos usá-lo, precisamos resolver um problema de
+performance.
+
+Assim que suas tabelas de Fatos ultrapassarem alguns milhões de linhas,
+você começará a notar a degradação da performance. Consultas simples podem
+levar minutos; isso torna o Data Warehouse difícil (ou inviável) de usar.
+
+Usuários esperam respostas instantâneas.
+
+Felizmente, existe uma solução simples para isso!
+
+=head2 Tabelas Agregadas
+
+Tabelas Agregadas podem nelhorar a performance de um Data Warehouse em
+centenas ou milhares de vezes. Uma consulta que levaria 10 minutos pode
+ser completada em menos de um segundo.
+
+De acordo com os principais pesquisadores sobre Data Warehouse, não há
+nenhuma outra maneira de conseguir resultados tão impressionantes.
+
+Qual é o segredo?
+
+O truque consiste em guardar informações pre-calculadas, tabelas sumarizadas,
+de forma que precisemos acessar muito menos informação.
+
+Nós trocamos espaço em disco por velocidade: tipicamente, um Data Warehouse
+deve guardar praticamente o seu tamanho original em tabelas agregadas.
+
+=head3 Exemplo
+
+Imagine que você tenha um relatório de "vendas por mês". Esta é uma possível
+query:
+
+    SELECT
+        month,
+        SUM(sales)
+    FROM Sales
+    WHERE year=$year
+    GROUP BY month;
+
+Se a sua empresa fizer 100 mil vendas por mês, esta simples consulta terá
+que percorrer mais de 1,2 milhões de linhas para efetuar uma soma simples.
+
+Imagine agora que nós temos uma tabela pre-calculada, Sales_by_day:
+
+    SELECT
+        month,
+        SUM(sales)
+    FROM Sales_by_day
+    WHERE year=$year
+    GROUP BY month;
+
+Agora nós podemos obter a mesma resposta consultando 365 linhas,
+ao invés de 1,2 milhões. Uma redução de 3 mil vezes!
+
+O único problema dessa abordagem é que dificilmente podemos prever
+todas as tabelas agregadas que poderíamos precisar; assim, acabamos
+por criar diversas tabelas agregadas para cada tabela de fatos:
+
+=over
+
+=item Sales_by_day
+
+=item Sales_by_month
+
+=item Sales_by_year
+
+=item Sales_by_product
+
+=item Sales_by_brand
+
+=item Sales_by_user
+
+=item Sales_by_region
+
+=item etc.
+
+=back
+
+Mais do que isso: você precisa que os usuários (ou programadores)
+utilizem estas tabelas, ao invés da tabela base.
+
+Infelizmente, você sabe: as pessoas irão realizar suas consultas
+contra a tabela base, pois isso é mais fácil.
+
+Mas este problema também tem solução.
+
+=head1 AGGREGATE NAVIGATOR
+
+A solução para o problema de uso das tabelas agregadas, é torná-las
+invisíveis: nós criaremos uma camada intermediária, acima da base
+de dados, que interceptará cada consulta realizada contra a tabela
+base, e a reescreverá, fazendo uso da melhor tabela agregada
+disponível.
+
+Por exemplo:
+
+    ----------------------------------------------------------
+    User SQL...                 Becomes...
+    ----------------------------------------------------------
+    SELECT                      SELECT
+        month,                      month,
+        SUM(sales)                  SUM(sales)
+    FROM                        FROM
+        Sales                       Sales_by_month
+    WHERE                       WHERE
+        year=2010                   year=2010
+    GROUP BY                    GROUP BY
+        month                       month
+    ----------------------------------------------------------
+    SELECT                      SELECT
+        brand,                      brand,
+        SUM(sales)                  SUM(sales)
+    FROM                        FROM
+        Sales                       Sales_by_brand
+    WHERE                       WHERE
+        year=2010                   year=2010
+    GROUP BY                    GROUP BY
+        brand                       brand 
+    ----------------------------------------------------------
+    SELECT                      SELECT
+        month,                      month,
+        brand,                      brand,
+        SUM(sales)                  SUM(sales)
+    FROM                        FROM
+        Sales                       Sales_by_brand_by_month
+    WHERE                       WHERE
+        year=2010                   year=2010
+    GROUP BY                    GROUP BY
+        month,                      month,
+        brand                       brand 
+    ----------------------------------------------------------
+
+O Aggregate Navigator, que faz essa substituição, permitirá que os
+usuários continuem a usar a tabela base, e aumentará a performance
+do Data Warehouse de maneira transparente.
+
+=head1 AUTOR
+
+Nelson Ferraz, C<< <nferraz at gmail.com> >>
+
+=head1 COPYRIGHT
+
+Copyright 2010 Nelson Ferraz.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
