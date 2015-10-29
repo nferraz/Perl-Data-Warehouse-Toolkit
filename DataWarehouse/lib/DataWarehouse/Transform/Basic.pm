@@ -7,7 +7,7 @@ sub head {
 	my ($table,$n) = @_;
 
 	my @rows = @$table; 
-	@rows = splice(@rows,$n-1,$n);		
+	@rows = splice(@rows,0,$n);		
 
 	return \@rows;
 }
