@@ -4,28 +4,37 @@ use warnings;
 use strict;
 
 sub head {
-	my ($table,$n) = @_;
+	my ($dataset,$n) = @_;
+
+	my $table = $dataset->get_data_rows();
 
 	my @rows = @$table; 
 	@rows = splice(@rows,0,$n);		
 
-	return \@rows;
+	$dataset->set_data_rows([ @rows ]);
+
+	return $dataset;
 }
 
 sub tail {
-	my ($table,$n) = @_;
+	my ($dataset,$n) = @_;
 
-	my $len = scalar @$table;
+	my $table = $dataset->get_data_rows();
+	my $len   = scalar @$table;
 
 	my @rows = @$table; 
 	@rows 	 = splice(@rows,$len-$n,$n);		
 
-	return \@rows;
+	$dataset->set_data_rows([ @rows ]);
+
+	return $dataset;
 }
 
 sub remove_column {
-	my ($table,$field_idx) = @_;
+	my ($dataset,$field_idx) = @_;
 
+	my $table = $dataset->get_data_rows();
+	
 	my @rows  = @$table;
 	my $index = $field_idx - 1;
 
@@ -38,12 +47,15 @@ sub remove_column {
 		$rows[$i++] = [ @cols ];	
 	}
 
-	return \@rows;
+	$dataset->set_data_rows([ @rows ]);
+
+	return $dataset;
 }
 
 sub extract_columns {
-	my ($table,$field_idx) = @_;
+	my ($dataset,$field_idx) = @_;
 
+	my $table = $dataset->get_data_rows();
 	my @rows  = @$table;
 
 	my $i = 0;
@@ -55,12 +67,16 @@ sub extract_columns {
 		$rows[$i++]  = [ @new_cols ];
 	}
 
-	return \@rows;
+	$dataset->set_data_rows([ @rows ]);
+
+	return $dataset;
 }
 
 sub add_rownum {
-	my $table = shift;
-	
+	my $dataset = shift;
+
+	my $table = $dataset->get_data_rows();
+
 	my @rows  = @$table;
 	my @new_rows;
 
@@ -71,7 +87,26 @@ sub add_rownum {
 		push @new_rows, [ @cols ];	
 	}
 
-	return \@new_rows;
+	$dataset->set_data_rows([ @new_rows ]);
+
+	return $dataset;
+}
+
+sub add_computed_field {
+	my ($dataset,$sub_ref) = @_;
+
+	my $table = $dataset->get_data_rows();
+
+	my @rows = @$table;
+	my $i 	 = 0;
+
+	foreach (@rows) {
+		$sub_ref->($_);
+	}
+
+	$dataset->set_data_rows([ @rows ]);
+
+	return $dataset;
 }
 
 1;
@@ -113,52 +148,61 @@ This module provides various transformations to be performed on any data-set.
 
 =item 
 
-head($rows,$n)
+head($dataset,$n)
 
-Parameters: Array reference of data-set matrix
+Parameters: Data-set object 
 
-Return value: Data table array of first n rows 
-
-=cut
-
-=item
-
-tail($rows,$n)
-
-Parameters: Array reference of data-set matrix 
-
-Return value: Data table array of first n rows 
+Return value: Modified DataSet object with first n rows 
 
 =cut
 
 =item
 
-remove_column($rows,$n)
+tail($dataset,$n)
 
-Parameters: Array reference of data-set matrix, Field Index
+Parameters: Data-set object 
 
-Return value: Array of data table with n-th column removed 
-
-=cut
-
-=item
-
-extract_columns($rows,$fields_idx_array_ref);
-
-Parameters: Array reference of data-set matrix, Array reference of field indices 
-
-Return value: Array of data table containing each of the fields corresponding to the indices 
+Return value: Modified DataSet object with last n rows 
 
 =cut
 
 =item
 
-add_rownum($rows);
+remove_column($dataset,$n)
 
-Parameters: Array reference of data-set matrix 
+Parameters: Data-set object 
 
-Return value: Array of data table with extra numeric auto-increment column 
+Return value: Modified DataSet object with n-th column removed in data table 
+
 =cut
+
+=item
+
+extract_columns($dataset,$fields_idx_array_ref);
+
+Parameters: Data-set object 
+
+Return value: Modified DataSet object containing only the fields corresponding to the indices in data table
+
+=cut
+
+=item
+
+add_rownum($dataset)
+
+Parameters: Data-set object 
+
+Return value: Modified DataSet object with additional numeric auto-inc column in data table
+
+=cut
+
+=item
+
+add_computed_field($dataset,$sub_ref)
+
+Parameters: Data-set object, subroutine reference
+
+Return value: Modified DataSet object
 
 =back
 
