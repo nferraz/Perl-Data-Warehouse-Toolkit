@@ -146,7 +146,7 @@ subtest 'extract_columns' => sub {
             expect    => [ [3], [6], [9], [12] ],
         },
         {
-            label     => 'extract_column with field_idx = [3]',
+            label     => 'extract_column with field_idx = [1,3]',
             table     => $test_table[3],
             field_idx => [ 1, 3 ],
             expect    => [ [ 1, 3 ], [ 4, 6 ], [ 7, 9 ], [ 10, 12 ] ],
@@ -209,7 +209,7 @@ subtest 'add_computed_field' => sub {
     for my $test (@tests) {
         my $got =
           DataWarehouse::Transform::Basic::add_computed_field( $test->{table},
-            $sub_ref )->get_data_rows();
+            $sub_ref, "Computed Field 1" )->get_data_rows();
 
         is_deeply( $got, $test->{expect}, $test->{label} )
           or diag( Dumper $got);

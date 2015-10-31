@@ -33,10 +33,13 @@ sub tail {
 sub remove_column {
 	my ($dataset,$field_idx) = @_;
 
+	my $header= $dataset->get_headers();
 	my $table = $dataset->get_data_rows();
 	
 	my @rows  = @$table;
 	my $index = $field_idx - 1;
+
+	splice(@$header,$index,1);
 
 	my $i = 0;
 
@@ -47,6 +50,7 @@ sub remove_column {
 		$rows[$i++] = [ @cols ];	
 	}
 
+	$dataset->set_headers($header);
 	$dataset->set_data_rows([ @rows ]);
 
 	return $dataset;
@@ -55,8 +59,11 @@ sub remove_column {
 sub extract_columns {
 	my ($dataset,$field_idx) = @_;
 
+	my $header= $dataset->get_headers();
 	my $table = $dataset->get_data_rows();
 	my @rows  = @$table;
+
+	$header = [ map { $header->[$_-1] } @$field_idx ];
 
 	my $i = 0;
 
@@ -67,6 +74,7 @@ sub extract_columns {
 		$rows[$i++]  = [ @new_cols ];
 	}
 
+	$dataset->set_headers($header);
 	$dataset->set_data_rows([ @rows ]);
 
 	return $dataset;
@@ -75,6 +83,7 @@ sub extract_columns {
 sub add_rownum {
 	my $dataset = shift;
 
+	my $header= $dataset->get_headers();
 	my $table = $dataset->get_data_rows();
 
 	my @rows  = @$table;
@@ -87,14 +96,17 @@ sub add_rownum {
 		push @new_rows, [ @cols ];	
 	}
 
+	push @$header,"Sequence column";
+	$dataset->set_headers($header);
 	$dataset->set_data_rows([ @new_rows ]);
 
 	return $dataset;
 }
 
 sub add_computed_field {
-	my ($dataset,$sub_ref) = @_;
+	my ($dataset,$sub_ref,$head) = @_;
 
+	my $header= $dataset->get_headers();
 	my $table = $dataset->get_data_rows();
 
 	my @rows = @$table;
@@ -104,6 +116,8 @@ sub add_computed_field {
 		$sub_ref->($_);
 	}
 
+	push @$header,$head;
+	$dataset->set_headers($header);
 	$dataset->set_data_rows([ @rows ]);
 
 	return $dataset;
@@ -198,9 +212,9 @@ Return value: Modified DataSet object with additional numeric auto-inc column in
 
 =item
 
-add_computed_field($dataset,$sub_ref)
+add_computed_field($dataset,$sub_ref,$head)
 
-Parameters: Data-set object, subroutine reference
+Parameters: Data-set object, subroutine reference, String heading for computed field
 
 Return value: Modified DataSet object
 
