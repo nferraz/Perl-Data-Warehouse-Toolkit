@@ -1,5 +1,6 @@
 package DataWarehouse::DataSet;
 
+use strict;
 use fields qw(rows headers);
 
 sub new {
@@ -7,10 +8,10 @@ sub new {
 	my ($args)  = @_;
 
 	my $self = {
-					'rows'    => $args->{rows}    || [],
-					'headers' => $args->{headers} || [],	
-			   };
-	
+		'rows'    => $args->{rows}    || [],
+		'headers' => $args->{headers} || [],	
+	};
+
 	bless $self, $class;
 }
 
