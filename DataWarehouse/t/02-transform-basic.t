@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 use Data::Dumper;
 
-plan tests => 6;
+plan tests => 7;
 
 use DataWarehouse::Transform::Basic;
 use DataWarehouse::DataSet;
@@ -193,11 +193,12 @@ subtest 'add_computed_field' => sub {
 		$_row->[3] = $_row->[0] + $_row->[1] + $_row->[2];
 	};
 
+	my $data_rows  = [ [ 1 .. 3 ], [ 4 .. 6 ], [ 7 .. 9 ], [ 10 .. 12 ] ];
 	my $test_table = new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] });
 
     my @tests = (
         {
-            label => 'modify rows',
+            label => 'add computed field',
             table => $test_table,
             expect =>
               [ [ 1 .. 3, 6 ], [ 4 .. 6, 15 ], [ 7 .. 9, 24 ], [ 10 .. 12, 33 ] ],
@@ -210,6 +211,36 @@ subtest 'add_computed_field' => sub {
         my $got =
           DataWarehouse::Transform::Basic::add_computed_field( $test->{table},
             $sub_ref, "Computed Field 1" )->get_data_rows();
+
+        is_deeply( $got, $test->{expect}, $test->{label} )
+          or diag( Dumper $got);
+    }
+};
+
+subtest 'modify_field_values' => sub {
+	my $sub_ref = sub {
+		my $_row = shift;
+		$_row->[0] = 1;
+	};
+
+	my $data_rows  = [ [ 1 .. 3 ], [ 4 .. 6 ], [ 7 .. 9 ], [ 10 .. 12 ] ];
+	my $test_table = new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] });
+
+    my @tests = (
+        {
+            label => 'fill column value',
+            table => $test_table,
+            expect =>
+              [ [ 1,2,3 ], [ 1,5,6 ], [ 1,8,9 ], [ 1,11,12 ] ],
+        },
+    );
+
+    plan tests => scalar @tests;
+
+    for my $test (@tests) {
+        my $got =
+          DataWarehouse::Transform::Basic::modify_field_values( $test->{table},
+            $sub_ref)->get_data_rows();
 
         is_deeply( $got, $test->{expect}, $test->{label} )
           or diag( Dumper $got);

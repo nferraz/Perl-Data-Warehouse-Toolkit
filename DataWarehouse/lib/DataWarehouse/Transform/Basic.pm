@@ -110,7 +110,6 @@ sub add_computed_field {
 	my $table = $dataset->get_data_rows();
 
 	my @rows = @$table;
-	my $i 	 = 0;
 
 	foreach (@rows) {
 		$sub_ref->($_);
@@ -118,6 +117,21 @@ sub add_computed_field {
 
 	push @$header,$head;
 	$dataset->set_headers($header);
+	$dataset->set_data_rows([ @rows ]);
+
+	return $dataset;
+}
+
+sub modify_field_values {
+	my ($dataset,$sub_ref) = @_;
+
+	my $table = $dataset->get_data_rows();
+	my @rows  = @$table;
+
+	foreach (@rows) {
+		$sub_ref->($_);
+	}
+
 	$dataset->set_data_rows([ @rows ]);
 
 	return $dataset;
@@ -164,7 +178,7 @@ This module provides various transformations to be performed on any data-set.
 
 head($dataset,$n)
 
-Parameters: Data-set object 
+Parameters: DataSet object 
 
 Return value: Modified DataSet object with first n rows 
 
@@ -174,7 +188,7 @@ Return value: Modified DataSet object with first n rows
 
 tail($dataset,$n)
 
-Parameters: Data-set object 
+Parameters: DataSet object 
 
 Return value: Modified DataSet object with last n rows 
 
@@ -184,7 +198,7 @@ Return value: Modified DataSet object with last n rows
 
 remove_column($dataset,$n)
 
-Parameters: Data-set object 
+Parameters: DataSet object 
 
 Return value: Modified DataSet object with n-th column removed in data table 
 
@@ -194,7 +208,7 @@ Return value: Modified DataSet object with n-th column removed in data table
 
 extract_columns($dataset,$fields_idx_array_ref);
 
-Parameters: Data-set object 
+Parameters: DataSet object 
 
 Return value: Modified DataSet object containing only the fields corresponding to the indices in data table
 
@@ -204,7 +218,7 @@ Return value: Modified DataSet object containing only the fields corresponding t
 
 add_rownum($dataset)
 
-Parameters: Data-set object 
+Parameters: DataSet object 
 
 Return value: Modified DataSet object with additional numeric auto-inc column in data table
 
@@ -214,9 +228,21 @@ Return value: Modified DataSet object with additional numeric auto-inc column in
 
 add_computed_field($dataset,$sub_ref,$head)
 
-Parameters: Data-set object, subroutine reference, String heading for computed field
+Parameters: DataSet object, subroutine reference, String heading for computed field
 
 Return value: Modified DataSet object
+
+=cut
+
+=item
+
+modify_field_values($dataset,$sub_ref) 
+
+Parameters: DataSet object, subroutine reference
+
+Return value: Modified DataSet object
+
+=cut
 
 =back
 
