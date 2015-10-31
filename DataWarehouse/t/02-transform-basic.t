@@ -15,9 +15,9 @@ my $data_rows  = [ [ 1 .. 3 ], [ 4 .. 6 ], [ 7 .. 9 ], [ 10 .. 12 ] ];
 
 subtest 'head' => sub {
 	my @test_table = (
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] })
-					 );
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] })
+			);
 
     my @tests = (
         {
@@ -48,9 +48,9 @@ subtest 'head' => sub {
 
 subtest 'tail' => sub {
 	my @test_table = (
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] })
-					 );
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] })
+			);
 
     my @tests = (
         {
@@ -80,10 +80,10 @@ subtest 'tail' => sub {
 
 subtest 'remove_column' => sub {
 	my @test_table = (
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] })
-					 );
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] })
+			);
 
     my @tests = (
         {
@@ -120,11 +120,11 @@ subtest 'remove_column' => sub {
 
 subtest 'extract_columns' => sub {
 	my @test_table = (
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
-						new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] })
-					 );
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] }),
+			new DataWarehouse::DataSet({ rows => $data_rows, headers => [ 'h1','h2','h3' ] })
+			);
 
     my @tests = (
         {
